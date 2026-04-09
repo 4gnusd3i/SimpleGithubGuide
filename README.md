@@ -1,4 +1,4 @@
-# Simple Git and GitHub Guide
+# Simple Git and GitHub Guide (Excellence308 fork)
 
 ### The easiest way to create your own repository is to start by making a GitHub repository and then cloning it into a local repository. That way, you dont run into issues with different branch names like Main and Master.
 
