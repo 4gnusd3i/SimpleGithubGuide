@@ -1,4 +1,4 @@
-{
+window.SITE_DATA_FALLBACK = {
   "branch": "main",
   "commits": [
     {
@@ -435,3 +435,4 @@
     }
   ]
 }
+;

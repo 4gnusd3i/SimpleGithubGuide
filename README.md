@@ -1,112 +1,111 @@
-# Forks, Branches & Pull Requests
+# Excellence308's Vibecoded GitHub Guide
 
-This repository is a fork-workflow playground for learning Git and GitHub in a more visual, hands-on way.
+This repository is a classroom-friendly Git and GitHub playground built around the fork workflow.
 
-It is not meant to be a generic starter template. It is meant to be a safe place to practice the distributed workflow:
+Instead of acting like a generic starter template, it turns the distributed contribution process into something visual and interactive:
 
-- fork someone else's repository
-- clone your copy locally
-- create branches for focused changes
-- commit and push your work
-- open a pull request back to the original repository
+- a presentation-style landing page
+- an interactive commit-history viewer
+- a visitor starmap generated from the `Visitors/` folder
+- a repo structure designed to support pull requests and classroom demos
 
-## Why this repo exists
+## Project Purpose
 
-Git becomes much easier to understand once you stop thinking of it as "files in a folder" and start thinking of it as a shared history made by many people in many places.
+The goal of this project is to make core GitHub concepts easier to understand through a real repository and a polished front end.
 
-This project is built around that idea. The page in [`index.html`](index.html) turns the fork workflow into something you can present on a projector, while the repository itself stays useful as a practice space for:
+It is meant to help students practice:
 
-- distributed version control
-- remotes and forks
-- branches and commits
-- collaboration through pull requests
-- an interactive commit-history visualization with hover details
+- forking an upstream repository
+- cloning their own copy
+- creating focused branches
+- committing with meaningful metadata
+- pushing changes to a fork
+- opening pull requests back to the original repository
 
-## Local preview
+## Project Structure
 
-Open [`index.html`](index.html) in a browser to view the animated landing page.
+- [`index.html`](index.html): main page markup
+- [`style.css`](style.css): page styling and animation
+- [`assets/js/site.js`](assets/js/site.js): interactive commit and visitor visualizers
+- [`data/site-data.json`](data/site-data.json): generated snapshot used by the site
+- [`assets/js/site-data-fallback.js`](assets/js/site-data-fallback.js): generated fallback for local file preview
+- [`scripts/refresh_site_data.sh`](scripts/refresh_site_data.sh): cross-platform snapshot generator
+- [`.github/workflows/refresh-site-data.yml`](.github/workflows/refresh-site-data.yml): workflow that refreshes generated site data on `main`
 
-The styling lives in [`style.css`](style.css).
+## Local Preview
 
-The interactive commit visualization is powered by [`script.js`](script.js).
+Open [`index.html`](index.html) in a browser.
 
-If you merge new visitors or commits and want the static site data refreshed before pushing, run `./scripts/refresh_site_data.sh`.
+The site will:
 
-## Fork workflow at a glance
+- load live static snapshot data from [`data/site-data.json`](data/site-data.json)
+- fall back to [`assets/js/site-data-fallback.js`](assets/js/site-data-fallback.js) when the page is opened directly from disk
 
-1. Find the original repository.
-2. Fork it to your own GitHub account.
-3. Clone your fork to your local machine.
-4. Create a branch for your change.
-5. Edit files, then check your work with `git status`.
-6. Stage the files with `git add`.
-7. Commit with a clear message.
-8. Push the branch to your fork.
-9. Open a pull request from your fork back to the original repository.
+## Refreshing Site Data
 
-## Useful commands
+The visualizers are driven by generated data, not browser-side GitHub API calls.
 
-### Local repository commands
+That means the site avoids API rate limits while still showing current repository history and visitor information.
 
-- `git init`
-  Create a new local Git repository.
+To refresh the snapshot locally, run:
+
+```sh
+sh scripts/refresh_site_data.sh
+```
+
+This script is written to work across:
+
+- Linux
+- macOS
+- Windows through Git Bash
+
+By default it generates data for `main`.
+
+If you intentionally want a snapshot for another branch, run:
+
+```sh
+SITE_DATA_BRANCH=<branch-name> sh scripts/refresh_site_data.sh
+```
+
+## Automation
+
+On pushes to `main`, GitHub Actions automatically regenerates:
+
+- [`data/site-data.json`](data/site-data.json)
+- [`assets/js/site-data-fallback.js`](assets/js/site-data-fallback.js)
+
+This keeps the deployed site and the local-file fallback in sync.
+
+## Core Git Workflow
+
+1. Fork the upstream repository.
+2. Clone your fork locally.
+3. Create a branch for your change.
+4. Edit, test, and inspect the result.
+5. Commit with a clear message.
+6. Push the branch to your fork.
+7. Open a pull request back to upstream.
+
+## Useful Commands
 
 - `git status`
-  See what changed, what is staged, and what still needs attention.
-
-- `git add <filename>`
-  Stage one file.
-
-- `git add -A`
-  Stage all current changes.
-
-- `git commit -m "describe change"`
-  Save one meaningful step in the project's history.
-
-- `git branch`
-  Show local branches.
-
-- `git branch -r`
-  Show remote branches.
-
-- `git branch -a`
-  Show all branches.
-
-- `git checkout <branch-name>`
-  Move to another branch.
+  Inspect modified, staged, and untracked files.
 
 - `git checkout -b <branch-name>`
-  Create a new branch and switch to it.
+  Create and switch to a new branch.
 
-- `git log`
-  Read the commit history.
+- `git add <file>`
+  Stage a specific file.
 
-- `git merge <branch-name>`
-  Merge another branch into the one you are currently on.
+- `git commit -m "message"`
+  Record one meaningful change in history.
 
-### Remote repository commands
+- `git push origin <branch-name>`
+  Publish your branch to your fork.
 
-- `git clone <remote-repository-link>`
-  Copy a remote repository to your local machine.
+- `git log --oneline --decorate`
+  View recent history in a compact format.
 
-- `git remote add origin <remote-repository-link>`
-  Connect your local repository to a remote one.
+## Classroom Pitch
 
-- `git pull`
-  Fetch and merge changes from the remote repository.
-
-- `git push`
-  Send your commits to the remote repository.
-
-## GitHub ideas behind the repo
-
-- A fork is your own copy of someone else's repository on GitHub.
-- Your fork lets you experiment without changing the original project directly.
-- A pull request is how you propose your changes back to the original repository.
-- Review is part of the workflow, not an interruption of it.
-
-## Classroom version
-
-If this gets projected in class, the main pitch is simple:
-
-> Fork the repo, make the idea yours, and send your best version back with a pull request.
+Fork the repo, make it yours, and send your best version back with a pull request.

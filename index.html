@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Excellence308's Vibecoded GitHub Guide</title>
+  <link rel="icon" href="assets/images/github-logo.png" type="image/png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -60,7 +61,7 @@
         </article>
 
         <div class="stage-logo">
-          <img src="img_github_logo.jpg" alt="GitHub logo">
+          <img src="assets/images/github-logo.png" alt="GitHub logo">
         </div>
       </div>
     </section>
@@ -151,14 +152,13 @@
         <div
           class="graph-stage"
           id="commit-graph"
-          data-owner="Excellence308"
-          data-repo="SimpleGithubGuide"
-          data-branch="main"
           aria-label="Interactive visualization of repository commits"
         >
           <div class="graph-stage-copy">
             <p>Real commits from this repository, reimagined as a glowing constellation.</p>
           </div>
+
+          <div class="graph-glow" id="commit-glow" aria-hidden="true"></div>
 
           <svg class="graph-lines" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
             <path id="commit-path" class="commit-path"></path>
@@ -202,10 +202,6 @@
       <div
         class="visitor-stage"
         id="visitor-map"
-        data-owner="Excellence308"
-        data-repo="SimpleGithubGuide"
-        data-branch="main"
-        data-visitor-path="Visitors"
         aria-label="Interactive visitor constellation"
       >
         <div class="visitor-stage-copy">
@@ -213,10 +209,6 @@
         </div>
 
         <div class="visitor-nodes" id="visitor-nodes"></div>
-
-        <div class="visitor-tooltip" id="visitor-tooltip" role="status" aria-live="polite">
-          <strong id="visitor-tooltip-name">Visitor</strong>
-        </div>
       </div>
     </section>
 
@@ -254,6 +246,7 @@
       </div>
     </section>
   </main>
-  <script src="script.js"></script>
+  <script src="assets/js/site-data-fallback.js"></script>
+  <script src="assets/js/site.js"></script>
 </body>
 </html>
