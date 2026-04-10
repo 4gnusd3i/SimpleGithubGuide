@@ -315,12 +315,65 @@
       "time": "2026-04-10T12:22:46+02:00",
       "message": "Added star snapping",
       "labels": []
+    },
+    {
+      "sha": "174ce81",
+      "author": "Excellence308",
+      "time": "2026-04-10T13:24:04+02:00",
+      "message": "Refactorized the codebase. Cleaned up orphans, and sorted files",
+      "labels": []
+    },
+    {
+      "sha": "39ae34a",
+      "author": "Excellence308",
+      "time": "2026-04-10T13:41:34+02:00",
+      "message": "Refactor project structure and portable site data pipeline",
+      "labels": []
+    },
+    {
+      "sha": "332ce3c",
+      "author": "A3keed",
+      "time": "2026-04-10T12:15:52+02:00",
+      "message": "Abdallah (#15)",
+      "labels": []
+    },
+    {
+      "sha": "f8e845d",
+      "author": "Rebu93",
+      "time": "2026-04-10T12:39:52+02:00",
+      "message": "Fil",
+      "labels": []
+    },
+    {
+      "sha": "8eff127",
+      "author": "isaac",
+      "time": "2026-04-10T12:54:27+02:00",
+      "message": "Added isaacr0098 file",
+      "labels": []
+    },
+    {
+      "sha": "ddb4748",
+      "author": "naqshi02",
+      "time": "2026-04-10T12:55:54+02:00",
+      "message": "la til fil med username",
+      "labels": []
+    },
+    {
+      "sha": "5a8ebd2",
+      "author": "Karyna Zakabluk",
+      "time": "2026-04-10T13:15:46+02:00",
+      "message": "Add test file (#18)",
+      "labels": []
     }
   ],
   "visitors": [
     {
       "name": "4gnusd3i",
       "verified": true
+    },
+    {
+      "name": "A3keed.txt",
+      "verified": false
     },
     {
       "name": "AOR90.txt",
@@ -335,6 +388,10 @@
       "verified": true
     },
     {
+      "name": "Rebu93",
+      "verified": true
+    },
+    {
       "name": "RefridgeRaider.bmp",
       "verified": false
     },
@@ -343,8 +400,20 @@
       "verified": false
     },
     {
+      "name": "isaacr0098.txt",
+      "verified": false
+    },
+    {
+      "name": "karynazakabluk.txt",
+      "verified": false
+    },
+    {
       "name": "lutfi.txt",
       "verified": false
+    },
+    {
+      "name": "naqshi02",
+      "verified": true
     },
     {
       "name": "oksnoopy",
