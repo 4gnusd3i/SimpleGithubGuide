@@ -1,14 +1,131 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-background-color: grey;
+  font-family: Georgia, "Times New Roman", serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #0b1f14, #000000, #14532d);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.06) 2px, transparent 2px);
+  background-size: 40px 40px;
+  opacity: 0.25;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 720px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid #ffffff;
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  border: 4px solid #ffffff;
 }
 
 h1 {
-color: white;
-margin-left: 10px;
+  font-size: 2.3rem;
+  margin-bottom: 14px;
+  color: #ffffff;
+  letter-spacing: 1px;
 }
 
-p {
-color: white;
-margin-left: 10px;
-margin-top: 20px;
+.subtitle {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #dcfce7;
+  margin-bottom: 28px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.primary {
+  background: #166534;
+  color: white;
+  border: 1px solid white;
+}
+
+.primary:hover {
+  background: #15803d;
+}
+
+.secondary {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+}
+
+.secondary:hover {
+  background: #f3f4f6;
+}
+
+.info {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: left;
+}
+
+.info h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.info p {
+  color: #f8fafc;
+  line-height: 1.8;
+}
+
+.stars {
+  color: #dc2626;
+  font-size: 1.4rem;
+  letter-spacing: 8px;
+}
+
+.top {
+  margin-bottom: 18px;
+}
+
+.bottom {
+  margin-top: 20px;
 }
