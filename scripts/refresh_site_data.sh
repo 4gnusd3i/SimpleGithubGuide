@@ -4,10 +4,15 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 cd "$repo_root"
 
-mkdir -p data
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s\n' "jq is required to generate site data." >&2
+  exit 1
+fi
 
-branch="$(git rev-parse --abbrev-ref HEAD)"
-head_sha="$(git rev-parse HEAD)"
+mkdir -p data assets/js
+
+site_branch="${SITE_DATA_BRANCH:-main}"
+head_sha="$(git rev-parse "$site_branch")"
 
 tags_json="$(
   git for-each-ref --format='%(refname:short)%09%(objecttype)%09%(*objectname)%09%(objectname)' refs/tags |
@@ -22,7 +27,7 @@ tags_json="$(
 )"
 
 commits_json="$(
-  git log main --pretty=format:'%H%x09%h%x09%an%x09%ad%x09%s' --date=iso-strict |
+  git log "$site_branch" --pretty=format:'%H%x09%h%x09%an%x09%ad%x09%s' --date=iso-strict |
     jq -R -s '
       split("\n")
       | map(select(length > 0) | split("\t"))
@@ -37,7 +42,7 @@ commits_json="$(
 )"
 
 identities_json="$(
-  git log main --pretty=format:'%an' |
+  git log "$site_branch" --pretty=format:'%an' |
     jq -R -s '
       split("\n")
       | map(select(length > 0) | ascii_downcase)
@@ -53,7 +58,6 @@ visitors_json="$(
       | map(
           . as $file
           | {
-              file: $file,
               name: $file,
               verified: (($identities | index(($file | ascii_downcase))) != null)
             }
@@ -61,8 +65,9 @@ visitors_json="$(
     '
 )"
 
+snapshot_json="$(
 jq -n \
-  --arg branch "$branch" \
+  --arg branch "$site_branch" \
   --arg headSha "$head_sha" \
   --argjson tags "$tags_json" \
   --argjson commits "$commits_json" \
@@ -88,6 +93,10 @@ jq -n \
     ),
     visitors: $visitors
   }
-' > data/site-data.json
+'
+)"
 
-printf 'Updated %s\n' "data/site-data.json"
+printf '%s\n' "$snapshot_json" > data/site-data.json
+printf 'window.SITE_DATA_FALLBACK = %s;\n' "$snapshot_json" > assets/js/site-data-fallback.js
+
+printf 'Updated %s and %s\n' "data/site-data.json" "assets/js/site-data-fallback.js"

@@ -243,8 +243,7 @@ h1 {
   overflow: visible;
 }
 
-.stage-logo::before,
-.stage-logo::after {
+.stage-logo::before {
   content: "";
   position: absolute;
   inset: auto;
@@ -258,13 +257,6 @@ h1 {
   transform: rotate(-10deg) scale(1.04) translateY(8px);
   background: linear-gradient(180deg, rgba(255, 209, 102, 0.92), rgba(255, 140, 112, 0.92));
   box-shadow: 0 18px 44px rgba(246, 168, 59, 0.22);
-}
-
-.stage-logo::after {
-  width: 72%;
-  height: 72%;
-  transform: rotate(12deg) translate(30px, 22px);
-  display: none;
 }
 
 .stage-logo img {
@@ -806,19 +798,9 @@ h1 {
   opacity: 1;
 }
 
-.visitor-tooltip strong,
-.visitor-tooltip span {
-  display: block;
-}
-
 .visitor-tooltip strong {
+  display: block;
   font-size: 0.98rem;
-}
-
-.visitor-tooltip span {
-  color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.4;
 }
 
 @keyframes shimmer {

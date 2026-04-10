@@ -28,9 +28,13 @@ Open [`index.html`](index.html) in a browser to view the animated landing page.
 
 The styling lives in [`style.css`](style.css).
 
-The interactive commit visualization is powered by [`script.js`](script.js).
+The runtime behavior lives in [`assets/js/site.js`](assets/js/site.js).
 
-If you merge new visitors or commits and want the static site data refreshed before pushing, run `./scripts/refresh_site_data.sh`.
+The committed snapshot in [`data/site-data.json`](data/site-data.json) and the local-file fallback in [`assets/js/site-data-fallback.js`](assets/js/site-data-fallback.js) are refreshed automatically on pushes to `main` by [`.github/workflows/refresh-site-data.yml`](.github/workflows/refresh-site-data.yml).
+
+If you want to preview updated `main` data locally before pushing, run `./scripts/refresh_site_data.sh`.
+
+If you want to generate a snapshot for another branch on purpose, run `SITE_DATA_BRANCH=<branch-name> ./scripts/refresh_site_data.sh`.
 
 ## Fork workflow at a glance
 
