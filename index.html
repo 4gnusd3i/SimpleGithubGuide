@@ -1,14 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Simple Git and GitHub Guide!</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excellence308's Vibecoded GitHub Guide</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="page-glow page-glow-left" aria-hidden="true"></div>
+  <div class="page-glow page-glow-right" aria-hidden="true"></div>
 
-<h1>Simple Git and GitHub Guide!</h1>
-<div><img src="img_github_logo.jpg" alt="GitHub Logo"
-style="width:100%;max-width:200px;margin-left: 100px;"></div>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Distributed version control, but with more sparkle</p>
+        <h1>Excellence308's Simple GitHub Guide.</h1>
+        <p class="lead">
+          This repository is a playful lab for learning the fork workflow on GitHub:
+          take the upstream idea, make your own changes, and send a polished pull
+          request back into the world.
+        </p>
 
+        <div class="command-ribbon" aria-label="Git workflow highlights">
+          <span class="command-chip">fork</span>
+          <span class="command-chip">clone</span>
+          <span class="command-chip">branch</span>
+          <span class="command-chip">commit</span>
+          <span class="command-chip">push</span>
+          <span class="command-chip">pull request</span>
+        </div>
+      </div>
+
+      <div class="hero-stage" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+
+        <article class="stage-card stage-card-upstream">
+          <span class="stage-label">Upstream Repo</span>
+          <strong>Original project</strong>
+          <p>The source everyone begins from.</p>
+        </article>
+
+        <article class="stage-card stage-card-fork">
+          <span class="stage-label">Your Fork</span>
+          <strong>Your playground</strong>
+          <p>Your own copy, your own commits, your own experiments.</p>
+        </article>
+
+        <article class="stage-card stage-card-branch">
+          <span class="stage-label">Feature Branch</span>
+          <strong>Safe side quest</strong>
+          <p>A neat pocket universe for one focused idea.</p>
+        </article>
+
+        <article class="stage-card stage-card-pr">
+          <span class="stage-label">Pull Request</span>
+          <strong>Send it back</strong>
+          <p>Open the door for review, discussion, and merging.</p>
+        </article>
+
+        <div class="stage-logo">
+          <img src="img_github_logo.jpg" alt="GitHub logo">
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-story">
+      <div class="panel-heading">
+        <p class="eyebrow">What this repo teaches</p>
+        <h2>A fork is not a copy-paste. It is a conversation.</h2>
+      </div>
+
+      <div class="story-grid">
+        <article class="story-card">
+          <h3>Fork boldly</h3>
+          <p>
+            You do not need direct write access to start contributing. You fork,
+            work independently, and still stay connected to the original project.
+          </p>
+        </article>
+
+        <article class="story-card">
+          <h3>Branch with purpose</h3>
+          <p>
+            Small branches make ideas easier to test, review, and explain. Every
+            change gets its own little runway.
+          </p>
+        </article>
+
+        <article class="story-card">
+          <h3>Commit the plot twists</h3>
+          <p>
+            Commits are the story beats. They show what changed, why it changed,
+            and how your experiment evolved over time.
+          </p>
+        </article>
+
+        <article class="story-card">
+          <h3>Pull request the finale</h3>
+          <p>
+            A pull request is where the distributed workflow becomes collaboration:
+            review, feedback, iteration, and merge.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel panel-timeline">
+      <div class="panel-heading">
+        <p class="eyebrow">A tiny workflow in motion</p>
+        <h2>The classroom adventure, rendered as a commit trail.</h2>
+      </div>
+
+      <div class="timeline" aria-label="Fork workflow timeline">
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <h3>1. Spot the upstream</h3>
+          <p>Find the original repository and decide what you want to change.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <h3>2. Fork and clone</h3>
+          <p>Make your own remote copy, then bring it down to your machine.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <h3>3. Branch and build</h3>
+          <p>Keep the change isolated so experiments stay clean and reversible.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <h3>4. Push your version</h3>
+          <p>Your fork becomes the public stage for your latest idea.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <h3>5. Open the pull request</h3>
+          <p>Invite the original repository to review, discuss, and merge.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-graph">
+      <div class="panel-heading">
+        <p class="eyebrow">Interactive History</p>
+        <h2>Hover the repo history and watch the commits light up.</h2>
+      </div>
+
+      <div class="history-experience">
+        <div
+          class="graph-stage"
+          id="commit-graph"
+          data-owner="Excellence308"
+          data-repo="SimpleGithubGuide"
+          data-branch="main"
+          aria-label="Interactive visualization of repository commits"
+        >
+          <div class="graph-stage-copy">
+            <p>Real commits from this repository, reimagined as a glowing constellation.</p>
+          </div>
+
+          <svg class="graph-lines" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
+            <path id="commit-path" class="commit-path"></path>
+          </svg>
+
+          <div class="graph-nodes" id="commit-nodes"></div>
+
+          <div class="commit-tooltip" id="commit-tooltip" role="status" aria-live="polite">
+            <strong id="tooltip-author">Excellence308</strong>
+            <span id="tooltip-time">Hover a commit node</span>
+          </div>
+        </div>
+
+        <aside class="commit-inspector" id="commit-inspector" aria-live="polite">
+          <p class="commit-kicker">Selected commit</p>
+          <h3 id="inspector-message">Loading commit history...</h3>
+          <dl class="commit-meta">
+            <div>
+              <dt>Author</dt>
+              <dd id="inspector-author">-</dd>
+            </div>
+            <div>
+              <dt>Timestamp</dt>
+              <dd id="inspector-time">-</dd>
+            </div>
+            <div>
+              <dt>Short SHA</dt>
+              <dd id="inspector-sha">-</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel panel-visitors">
+      <div class="panel-heading">
+        <p class="eyebrow">Visitor Constellation</p>
+        <h2>The class roster, rendered as a little starmap.</h2>
+      </div>
+
+      <div
+        class="visitor-stage"
+        id="visitor-map"
+        data-owner="Excellence308"
+        data-repo="SimpleGithubGuide"
+        data-branch="main"
+        data-visitor-path="Visitors"
+        aria-label="Interactive visitor constellation"
+      >
+        <div class="visitor-stage-copy">
+          <p>A growing constellation of everyone who has visited the repository.</p>
+        </div>
+
+        <div class="visitor-nodes" id="visitor-nodes"></div>
+
+        <div class="visitor-tooltip" id="visitor-tooltip" role="status" aria-live="polite">
+          <strong id="visitor-tooltip-name">Visitor</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-cheatsheet">
+      <div class="panel-heading">
+        <p class="eyebrow">Pocket spellbook</p>
+        <h2>Small commands, dramatic consequences.</h2>
+      </div>
+
+      <div class="cheatsheet-grid">
+        <article class="cheat-card">
+          <code>git clone &lt;repo-url&gt;</code>
+          <p>Bring a remote repository into your local world.</p>
+        </article>
+        <article class="cheat-card">
+          <code>git checkout -b &lt;branch-name&gt;</code>
+          <p>Create a fresh branch and step into it immediately.</p>
+        </article>
+        <article class="cheat-card">
+          <code>git status</code>
+          <p>Ask Git what changed and what still needs attention.</p>
+        </article>
+        <article class="cheat-card">
+          <code>git add -A</code>
+          <p>Stage the current set of changes for the next commit.</p>
+        </article>
+        <article class="cheat-card">
+          <code>git commit -m "message"</code>
+          <p>Capture one meaningful step in your project story.</p>
+        </article>
+        <article class="cheat-card">
+          <code>git push origin &lt;branch-name&gt;</code>
+          <p>Publish your branch to your fork on GitHub.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>

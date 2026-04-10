@@ -1,60 +1,112 @@
-# Simple Git and GitHub Guide
+# Forks, Branches & Pull Requests
 
-### The easiest way to create your own repository is to start by making a GitHub repository and then cloning it into a local repository. That way, you dont run into issues with different branch names like Main and Master.
+This repository is a fork-workflow playground for learning Git and GitHub in a more visual, hands-on way.
 
-1. Create a repository on GitHub
-   - Decide on a suitable name
-   - Decide if you want your repository to be public or private
-   - Decide what license you want to use
-2. From your repository, click the green code button and copy the HTTPS link
-3. On your local computer open CMD and navigate to where you want your folder to be
-   - Run _git clone \<link to your repository on github\>_
-   - A folder for your repository will be created
-   - Navigate into the folder
-4. Now you have a local git repository that is tied to your GitHub repository.
-   - Here you can:
-     - Add your files
-     - Create branches
-     - Merge branches
-     - Commit
-     - Push changes to GitHub
-     - Pull changes from GitHub
+It is not meant to be a generic starter template. It is meant to be a safe place to practice the distributed workflow:
 
-### Usefull commands:
+- fork someone else's repository
+- clone your copy locally
+- create branches for focused changes
+- commit and push your work
+- open a pull request back to the original repository
 
-**Local repository related commands**
+## Why this repo exists
 
-- Initialise an empty local repository
-  - _git init_
-- See status of the git repository
-  - _git status_
-- Add files for staging
-  - _git add \<filename\>_ ||| add single file
-  - _git add -A_ ||| add all files
-- Commit changes
-  - _git commit -m "\<describe change\>"_
-- See branches
-  - _git branch_ ||| for local branches
-  - _git branch -r_ ||| for remote branches
-  - _git branch -a_ ||| for all branches
-- Change branch
-  - _git checkout \<branch you want to change to\>_
-- See commit log
-  - _git log_
-- Merge two branches
-  - _git merge <branch you want to merge into the branch you are in>_
+Git becomes much easier to understand once you stop thinking of it as "files in a folder" and start thinking of it as a shared history made by many people in many places.
 
-**Remote repository related commands**
+This project is built around that idea. The page in [`index.html`](index.html) turns the fork workflow into something you can present on a projector, while the repository itself stays useful as a practice space for:
 
-- Add a remote repository to a local repository
-  - _git add remote origin \<remote repository link\>_
-- Clone a remote repository into a local repository
-  - _git clone \<remote repository link\>_
-- Pull changes from remote repository (combination of _fetch_ and _merge_)
-  - _git pull_
-- Push changes to remote repository
-  - _git push_
+- distributed version control
+- remotes and forks
+- branches and commits
+- collaboration through pull requests
+- an interactive commit-history visualization with hover details
 
-**GitHub specific actions**
-- Forking a repository means that you make a copy of someone else's repository and save the copy as a repository that you *own*
-- If you make changes to your fork of a repository, in order to submit those changes to the original repository. You have to create a pull request.
+## Local preview
+
+Open [`index.html`](index.html) in a browser to view the animated landing page.
+
+The styling lives in [`style.css`](style.css).
+
+The interactive commit visualization is powered by [`script.js`](script.js).
+
+If you merge new visitors or commits and want the static site data refreshed before pushing, run `./scripts/refresh_site_data.sh`.
+
+## Fork workflow at a glance
+
+1. Find the original repository.
+2. Fork it to your own GitHub account.
+3. Clone your fork to your local machine.
+4. Create a branch for your change.
+5. Edit files, then check your work with `git status`.
+6. Stage the files with `git add`.
+7. Commit with a clear message.
+8. Push the branch to your fork.
+9. Open a pull request from your fork back to the original repository.
+
+## Useful commands
+
+### Local repository commands
+
+- `git init`
+  Create a new local Git repository.
+
+- `git status`
+  See what changed, what is staged, and what still needs attention.
+
+- `git add <filename>`
+  Stage one file.
+
+- `git add -A`
+  Stage all current changes.
+
+- `git commit -m "describe change"`
+  Save one meaningful step in the project's history.
+
+- `git branch`
+  Show local branches.
+
+- `git branch -r`
+  Show remote branches.
+
+- `git branch -a`
+  Show all branches.
+
+- `git checkout <branch-name>`
+  Move to another branch.
+
+- `git checkout -b <branch-name>`
+  Create a new branch and switch to it.
+
+- `git log`
+  Read the commit history.
+
+- `git merge <branch-name>`
+  Merge another branch into the one you are currently on.
+
+### Remote repository commands
+
+- `git clone <remote-repository-link>`
+  Copy a remote repository to your local machine.
+
+- `git remote add origin <remote-repository-link>`
+  Connect your local repository to a remote one.
+
+- `git pull`
+  Fetch and merge changes from the remote repository.
+
+- `git push`
+  Send your commits to the remote repository.
+
+## GitHub ideas behind the repo
+
+- A fork is your own copy of someone else's repository on GitHub.
+- Your fork lets you experiment without changing the original project directly.
+- A pull request is how you propose your changes back to the original repository.
+- Review is part of the workflow, not an interruption of it.
+
+## Classroom version
+
+If this gets projected in class, the main pitch is simple:
+
+> Fork the repo, make the idea yours, and send your best version back with a pull request.
