@@ -199,50 +199,24 @@
         <h2>The class roster, rendered as a little starmap.</h2>
       </div>
 
-      <div class="visitor-experience">
-        <div
-          class="visitor-stage"
-          id="visitor-map"
-          data-owner="Excellence308"
-          data-repo="SimpleGithubGuide"
-          data-branch="main"
-          data-visitor-path="Visitors"
-          aria-label="Interactive visitor constellation"
-        >
-          <div class="visitor-stage-copy">
-            <p>A growing constellation of everyone who has visited the repository.</p>
-          </div>
-
-          <div class="visitor-nodes" id="visitor-nodes"></div>
-
-          <div class="visitor-tooltip" id="visitor-tooltip" role="status" aria-live="polite">
-            <strong id="visitor-tooltip-name">Visitor</strong>
-            <span id="visitor-tooltip-status">Hover a star</span>
-          </div>
+      <div
+        class="visitor-stage"
+        id="visitor-map"
+        data-owner="Excellence308"
+        data-repo="SimpleGithubGuide"
+        data-branch="main"
+        data-visitor-path="Visitors"
+        aria-label="Interactive visitor constellation"
+      >
+        <div class="visitor-stage-copy">
+          <p>A growing constellation of everyone who has visited the repository.</p>
         </div>
 
-        <aside class="visitor-inspector" aria-live="polite">
-          <p class="visitor-kicker">Visitor Orbit</p>
-          <h3 id="visitor-title">Loading visitors...</h3>
-          <p class="visitor-summary" id="visitor-summary">
-            Reading the `Visitors` folder and placing each file into the starmap.
-          </p>
+        <div class="visitor-nodes" id="visitor-nodes"></div>
 
-          <dl class="visitor-stats">
-            <div>
-              <dt>Visitors</dt>
-              <dd id="visitor-count">-</dd>
-            </div>
-            <div>
-              <dt>Bright Stars</dt>
-              <dd id="visitor-verified-count">-</dd>
-            </div>
-            <div>
-              <dt>Quiet Stars</dt>
-              <dd id="visitor-neutral-count">-</dd>
-            </div>
-          </dl>
-        </aside>
+        <div class="visitor-tooltip" id="visitor-tooltip" role="status" aria-live="polite">
+          <strong id="visitor-tooltip-name">Visitor</strong>
+        </div>
       </div>
     </section>
 

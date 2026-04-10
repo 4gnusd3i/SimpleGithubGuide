@@ -126,13 +126,6 @@ async function initVisitorMap(visitorElement) {
   const nodeLayer = document.getElementById("visitor-nodes");
   const tooltip = document.getElementById("visitor-tooltip");
   const tooltipName = document.getElementById("visitor-tooltip-name");
-  const tooltipStatus = document.getElementById("visitor-tooltip-status");
-
-  const title = document.getElementById("visitor-title");
-  const summary = document.getElementById("visitor-summary");
-  const count = document.getElementById("visitor-count");
-  const brightCount = document.getElementById("visitor-verified-count");
-  const quietCount = document.getElementById("visitor-neutral-count");
 
   try {
     const siteData = await siteDataPromise;
@@ -141,20 +134,11 @@ async function initVisitorMap(visitorElement) {
       visitorElement,
       nodeLayer,
       tooltip,
-      tooltipName,
-      tooltipStatus,
-      title,
-      summary,
-      count,
-      brightCount,
-      quietCount
+      tooltipName
     );
   } catch (error) {
-    title.textContent = "Visitors could not be loaded.";
-    summary.textContent = error instanceof Error ? error.message : "The local site data is unavailable.";
-    count.textContent = "-";
-    brightCount.textContent = "-";
-    quietCount.textContent = "-";
+    tooltipName.textContent = error instanceof Error ? error.message : "Visitors could not be loaded.";
+    tooltip.classList.add("is-visible");
   }
 }
 
@@ -295,34 +279,21 @@ function renderVisitorMap(
   visitorElement,
   nodeLayer,
   tooltip,
-  tooltipName,
-  tooltipStatus,
-  title,
-  summary,
-  count,
-  brightCount,
-  quietCount
+  tooltipName
 ) {
   nodeLayer.replaceChildren();
 
-  const brightVisitors = visitors.filter((visitor) => visitor.verified).length;
-  const quietVisitors = visitors.length - brightVisitors;
-
-  count.textContent = String(visitors.length);
-  brightCount.textContent = String(brightVisitors);
-  quietCount.textContent = String(quietVisitors);
-
   if (visitors.length === 0) {
-    title.textContent = "No visitors yet.";
-    summary.textContent = "Once the class starts adding files to the Visitors folder, stars will appear here.";
+    tooltipName.textContent = "No visitors yet.";
+    tooltip.style.left = "50%";
+    tooltip.style.top = "50%";
+    tooltip.classList.add("is-visible");
     return;
   }
 
-  title.textContent = `${visitors.length} visitors in orbit`;
-  summary.textContent = "Each file in the Visitors folder becomes a star in the constellation.";
-
   const points = createVisitorLayout(visitors.length);
   let activeNode = null;
+  const starNodes = [];
 
   visitors.forEach((visitor, index) => {
     const point = points[index];
@@ -332,17 +303,18 @@ function renderVisitorMap(
     node.style.left = `${point.x}%`;
     node.style.top = `${point.y}%`;
     node.setAttribute("aria-label", `${visitor.name}. Visitor star.`);
+    applyVisitorStarStyle(node, index, visitor.verified);
 
     const label = document.createElement("span");
     label.className = "visitor-node-label";
     label.textContent = visitor.name;
     node.appendChild(label);
 
-    node.addEventListener("mouseenter", () => activateVisitor(node, visitor, point));
     node.addEventListener("focus", () => activateVisitor(node, visitor, point));
     node.addEventListener("click", () => activateVisitor(node, visitor, point));
 
     nodeLayer.appendChild(node);
+    starNodes.push({ node, point });
 
     if (index === 0) {
       activateVisitor(node, visitor, point, false);
@@ -351,14 +323,18 @@ function renderVisitorMap(
 
   visitorElement.addEventListener("pointermove", (event) => {
     const bounds = visitorElement.getBoundingClientRect();
-    visitorElement.style.setProperty("--visitor-glow-x", `${event.clientX - bounds.left}px`);
-    visitorElement.style.setProperty("--visitor-glow-y", `${event.clientY - bounds.top}px`);
+    const mouseX = event.clientX - bounds.left;
+    const mouseY = event.clientY - bounds.top;
+    visitorElement.style.setProperty("--visitor-glow-x", `${mouseX}px`);
+    visitorElement.style.setProperty("--visitor-glow-y", `${mouseY}px`);
+    visitorElement.style.setProperty("--visitor-glow-opacity", "1");
+    displaceVisitorStars(starNodes, mouseX, mouseY, bounds.width, bounds.height);
   });
 
   visitorElement.addEventListener("pointerleave", () => {
     tooltip.classList.remove("is-visible");
-    visitorElement.style.setProperty("--visitor-glow-x", "50%");
-    visitorElement.style.setProperty("--visitor-glow-y", "50%");
+    visitorElement.style.setProperty("--visitor-glow-opacity", "0");
+    displaceVisitorStars(starNodes, null, null, 1, 1);
   });
 
   function activateVisitor(node, visitor, point, showTooltip = true) {
@@ -369,13 +345,7 @@ function renderVisitorMap(
     activeNode = node;
     activeNode.classList.add("is-active");
 
-    title.textContent = visitor.name;
-    summary.textContent = visitor.verified
-      ? "A bright star in the constellation."
-      : "A quiet star in the constellation.";
-
     tooltipName.textContent = visitor.name;
-    tooltipStatus.textContent = visitor.verified ? "Bright star" : "Quiet star";
     tooltip.style.left = `${clamp(point.x, 14, 86)}%`;
     tooltip.style.top = `${clamp(point.y - 4, 18, 84)}%`;
 
@@ -452,4 +422,71 @@ function createVisitorLayout(count) {
   }
 
   return points;
+}
+
+function applyVisitorStarStyle(node, index, verified) {
+  const brightPalette = [
+    { core: "#ffffff", edge: "#fdf9ef", glow: "rgba(255, 250, 234, 0.96)" },
+    { core: "#ffffff", edge: "#f4f9ff", glow: "rgba(235, 246, 255, 0.9)" },
+    { core: "#ffffff", edge: "#fff7f1", glow: "rgba(255, 244, 233, 0.92)" }
+  ];
+  const quietPalette = [
+    { core: "#edf2fb", edge: "#bbc7d8", glow: "rgba(187, 199, 216, 0.13)" },
+    { core: "#eef4ff", edge: "#b8c4d8", glow: "rgba(184, 196, 216, 0.12)" },
+    { core: "#f1eef4", edge: "#c8c0cc", glow: "rgba(200, 192, 204, 0.11)" }
+  ];
+
+  const palette = (verified ? brightPalette : quietPalette)[index % 3];
+  const size = verified ? 0.98 + (index % 3) * 0.12 : 0.34 + (index % 3) * 0.06;
+  const duration = verified ? 4.6 + (index % 4) * 0.9 : 6.8 + (index % 4) * 1.05;
+  const haloDuration = duration * (verified ? 1.18 : 1.32);
+  const flickerDuration = duration * (verified ? 0.76 : 0.92);
+  const delay = (index % 5) * -0.83;
+  const opacityLow = verified ? 0.84 : 0.44;
+  const opacityMid = verified ? 0.93 : 0.58;
+  const opacityHigh = verified ? 1 : 0.72;
+  const haloMin = verified ? 0.28 : 0.08;
+  const haloMax = verified ? 0.92 : 0.22;
+  const pushMax = verified ? 7.5 : 4.5;
+  const hoverScale = verified ? 1.18 : 1.12;
+
+  node.style.setProperty("--star-size", `${size}rem`);
+  node.style.setProperty("--star-core", palette.core);
+  node.style.setProperty("--star-edge", palette.edge);
+  node.style.setProperty("--star-glow", palette.glow);
+  node.style.setProperty("--star-duration", `${duration}s`);
+  node.style.setProperty("--star-halo-duration", `${haloDuration}s`);
+  node.style.setProperty("--star-flicker-duration", `${flickerDuration}s`);
+  node.style.setProperty("--star-delay", `${delay}s`);
+  node.style.setProperty("--star-opacity-low", String(opacityLow));
+  node.style.setProperty("--star-opacity-mid", String(opacityMid));
+  node.style.setProperty("--star-opacity-high", String(opacityHigh));
+  node.style.setProperty("--star-halo-min", String(haloMin));
+  node.style.setProperty("--star-halo-max", String(haloMax));
+  node.style.setProperty("--star-hover-scale", String(hoverScale));
+  node.dataset.pushMax = String(pushMax);
+}
+
+function displaceVisitorStars(stars, mouseX, mouseY, width, height) {
+  if (mouseX === null || mouseY === null) {
+    stars.forEach(({ node }) => {
+      node.style.setProperty("--star-offset-x", "0px");
+      node.style.setProperty("--star-offset-y", "0px");
+    });
+    return;
+  }
+
+  stars.forEach(({ node, point }) => {
+    const starX = (point.x / 100) * width;
+    const starY = (point.y / 100) * height;
+    const dx = starX - mouseX;
+    const dy = starY - mouseY;
+    const distance = Math.hypot(dx, dy);
+    const influence = Math.max(0, 1 - distance / 130);
+    const push = influence * influence * Number.parseFloat(node.dataset.pushMax || "5");
+    const angle = Math.atan2(dy, dx);
+
+    node.style.setProperty("--star-offset-x", `${Math.cos(angle) * push}px`);
+    node.style.setProperty("--star-offset-y", `${Math.sin(angle) * push}px`);
+  });
 }
