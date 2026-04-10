@@ -30,6 +30,8 @@ The styling lives in [`style.css`](style.css).
 
 The interactive commit visualization is powered by [`script.js`](script.js).
 
+If you merge new visitors or commits and want the static site data refreshed before pushing, run `./scripts/refresh_site_data.sh`.
+
 ## Fork workflow at a glance
 
 1. Find the original repository.

@@ -1,5 +1,6 @@
 const graph = document.getElementById("commit-graph");
 const visitorMap = document.getElementById("visitor-map");
+const siteDataPromise = loadSiteData();
 
 if (graph) {
   initCommitGraph(graph);
@@ -7,6 +8,18 @@ if (graph) {
 
 if (visitorMap) {
   initVisitorMap(visitorMap);
+}
+
+async function loadSiteData() {
+  const response = await fetch("data/site-data.json", {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Site data could not be loaded (${response.status}).`);
+  }
+
+  return response.json();
 }
 
 async function initCommitGraph(graphElement) {
@@ -21,34 +34,13 @@ async function initCommitGraph(graphElement) {
   const inspectorTime = document.getElementById("inspector-time");
   const inspectorSha = document.getElementById("inspector-sha");
 
-  const owner = graphElement.dataset.owner;
-  const repo = graphElement.dataset.repo;
-  const preferredBranch = graphElement.dataset.branch || "";
-  const limit = Number.parseInt(graphElement.dataset.commitLimit || "18", 10);
-
-  if (!owner || !repo) {
-    showGraphError(
-      "Repository metadata is missing.",
-      "Add data-owner and data-repo attributes so the graph knows what to load.",
-      inspectorMessage,
-      inspectorAuthor,
-      inspectorTime,
-      inspectorSha
-    );
-    return;
-  }
-
   try {
-    const branch = await fetchBranchName(owner, repo, preferredBranch);
-    const [commits, tags] = await Promise.all([
-      fetchCommits(owner, repo, branch, limit),
-      fetchTags(owner, repo)
-    ]);
+    const siteData = await siteDataPromise;
+    const limit = Number.parseInt(graphElement.dataset.commitLimit || String(siteData.commits.length), 10);
+    const commits = siteData.commits.slice(-limit);
 
-    const branchHeadSha = commits[0]?.sha || "";
-    const commitData = decorateCommits(commits, tags, branch, branchHeadSha);
     renderCommitGraph(
-      commitData,
+      commits,
       graphElement,
       nodeLayer,
       tooltip,
@@ -63,7 +55,7 @@ async function initCommitGraph(graphElement) {
   } catch (error) {
     showGraphError(
       "Commit history could not be loaded.",
-      error instanceof Error ? error.message : "The GitHub API request failed.",
+      error instanceof Error ? error.message : "The local site data is unavailable.",
       inspectorMessage,
       inspectorAuthor,
       inspectorTime,
@@ -72,160 +64,40 @@ async function initCommitGraph(graphElement) {
   }
 }
 
-async function fetchBranchName(owner, repo, preferredBranch) {
-  if (preferredBranch) {
-    return preferredBranch;
+async function initVisitorMap(visitorElement) {
+  const nodeLayer = document.getElementById("visitor-nodes");
+  const tooltip = document.getElementById("visitor-tooltip");
+  const tooltipName = document.getElementById("visitor-tooltip-name");
+  const tooltipStatus = document.getElementById("visitor-tooltip-status");
+
+  const title = document.getElementById("visitor-title");
+  const summary = document.getElementById("visitor-summary");
+  const count = document.getElementById("visitor-count");
+  const brightCount = document.getElementById("visitor-verified-count");
+  const quietCount = document.getElementById("visitor-neutral-count");
+
+  try {
+    const siteData = await siteDataPromise;
+    renderVisitorMap(
+      siteData.visitors,
+      visitorElement,
+      nodeLayer,
+      tooltip,
+      tooltipName,
+      tooltipStatus,
+      title,
+      summary,
+      count,
+      brightCount,
+      quietCount
+    );
+  } catch (error) {
+    title.textContent = "Visitors could not be loaded.";
+    summary.textContent = error instanceof Error ? error.message : "The local site data is unavailable.";
+    count.textContent = "-";
+    brightCount.textContent = "-";
+    quietCount.textContent = "-";
   }
-
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-    headers: {
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`GitHub repository API returned ${response.status}.`);
-  }
-
-  const payload = await response.json();
-  return payload.default_branch || "main";
-}
-
-async function fetchCommits(owner, repo, branch, limit) {
-  const url = new URL(`https://api.github.com/repos/${owner}/${repo}/commits`);
-  url.searchParams.set("sha", branch);
-  url.searchParams.set("per_page", String(limit));
-
-  const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`GitHub commits API returned ${response.status}.`);
-  }
-
-  const payload = await response.json();
-
-  if (!Array.isArray(payload) || payload.length === 0) {
-    throw new Error("No commits were returned for this repository.");
-  }
-
-  return payload;
-}
-
-async function fetchTags(owner, repo) {
-  const url = new URL(`https://api.github.com/repos/${owner}/${repo}/git/matching-refs/tags`);
-
-  const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const payload = await response.json();
-
-  if (!Array.isArray(payload)) {
-    return [];
-  }
-
-  const resolvedTags = await Promise.all(
-    payload.map(async (tagRef) => {
-      const name = tagRef.ref?.replace("refs/tags/", "");
-      const objectSha = tagRef.object?.sha;
-      const objectType = tagRef.object?.type;
-
-      if (!name || !objectSha || !objectType) {
-        return null;
-      }
-
-      if (objectType === "commit") {
-        return { name, sha: objectSha };
-      }
-
-      if (objectType === "tag") {
-        const annotatedTargetSha = await fetchAnnotatedTagTarget(owner, repo, objectSha);
-
-        if (annotatedTargetSha) {
-          return { name, sha: annotatedTargetSha };
-        }
-      }
-
-      return null;
-    })
-  );
-
-  return resolvedTags.filter(Boolean);
-}
-
-async function fetchAnnotatedTagTarget(owner, repo, tagSha) {
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/tags/${tagSha}`, {
-    headers: {
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const payload = await response.json();
-  return payload?.object?.type === "commit" ? payload.object.sha : null;
-}
-
-function decorateCommits(commits, tags, branch, branchHeadSha) {
-  const tagsBySha = new Map();
-
-  tags.forEach((tag) => {
-    const sha = tag?.sha;
-
-    if (!sha) {
-      return;
-    }
-
-    const current = tagsBySha.get(sha) || [];
-    current.push(tag.name);
-    tagsBySha.set(sha, current);
-  });
-
-  const chronologicalCommits = [...commits].reverse();
-
-  return chronologicalCommits.map((entry) => {
-    const author =
-      entry.author?.login ||
-      entry.commit?.author?.name ||
-      "Unknown author";
-
-    const time =
-      entry.commit?.author?.date ||
-      entry.commit?.committer?.date ||
-      new Date().toISOString();
-
-    const message = entry.commit?.message?.split("\n")[0] || "Untitled commit";
-    const sha = entry.sha.slice(0, 7);
-    const labels = [];
-
-    if (entry.sha === branchHeadSha) {
-      labels.push("HEAD", branch);
-    }
-
-    const tagNames = tagsBySha.get(entry.sha) || [];
-    labels.push(...tagNames.slice(0, 2));
-
-    return {
-      sha,
-      fullSha: entry.sha,
-      author,
-      time,
-      message,
-      labels
-    };
-  });
 }
 
 function renderCommitGraph(
@@ -277,7 +149,7 @@ function renderCommitGraph(
       `${commit.message} by ${commit.author} on ${formatLongDate(commit.time)}`
     );
 
-    if (commit.labels.length > 0) {
+    if (Array.isArray(commit.labels) && commit.labels.length > 0) {
       const badges = document.createElement("span");
       badges.className = "commit-node-badges";
 
@@ -304,10 +176,8 @@ function renderCommitGraph(
 
   graphElement.addEventListener("pointermove", (event) => {
     const bounds = graphElement.getBoundingClientRect();
-    const x = event.clientX - bounds.left;
-    const y = event.clientY - bounds.top;
-    graphElement.style.setProperty("--glow-x", `${x}px`);
-    graphElement.style.setProperty("--glow-y", `${y}px`);
+    graphElement.style.setProperty("--glow-x", `${event.clientX - bounds.left}px`);
+    graphElement.style.setProperty("--glow-y", `${event.clientY - bounds.top}px`);
   });
 
   graphElement.addEventListener("pointerleave", () => {
@@ -332,184 +202,13 @@ function renderCommitGraph(
     tooltipAuthor.textContent = commit.author;
     tooltipTime.textContent = formatShortDate(commit.time);
 
-    const left = clamp((commit.x / viewport.width) * 100, 14, 86);
-    const top = clamp((commit.y / viewport.height) * 100 - 5, 18, 86);
-
-    tooltip.style.left = `${left}%`;
-    tooltip.style.top = `${top}%`;
+    tooltip.style.left = `${clamp((commit.x / viewport.width) * 100, 14, 86)}%`;
+    tooltip.style.top = `${clamp((commit.y / viewport.height) * 100 - 5, 18, 86)}%`;
 
     if (showTooltip) {
       tooltip.classList.add("is-visible");
     }
   }
-}
-
-function showGraphError(message, detail, inspectorMessage, inspectorAuthor, inspectorTime, inspectorSha) {
-  inspectorMessage.textContent = message;
-  inspectorAuthor.textContent = "Unavailable";
-  inspectorTime.textContent = detail;
-  inspectorSha.textContent = "-";
-}
-
-async function initVisitorMap(visitorElement) {
-  const nodeLayer = document.getElementById("visitor-nodes");
-  const tooltip = document.getElementById("visitor-tooltip");
-  const tooltipName = document.getElementById("visitor-tooltip-name");
-  const tooltipStatus = document.getElementById("visitor-tooltip-status");
-
-  const title = document.getElementById("visitor-title");
-  const summary = document.getElementById("visitor-summary");
-  const count = document.getElementById("visitor-count");
-  const verifiedCount = document.getElementById("visitor-verified-count");
-  const neutralCount = document.getElementById("visitor-neutral-count");
-
-  const owner = visitorElement.dataset.owner;
-  const repo = visitorElement.dataset.repo;
-  const visitorPath = visitorElement.dataset.visitorPath || "Visitors";
-
-  if (!owner || !repo) {
-    title.textContent = "Visitor source is missing.";
-    summary.textContent = "Add data-owner and data-repo so the roster can load.";
-    count.textContent = "-";
-    verifiedCount.textContent = "-";
-    neutralCount.textContent = "-";
-    return;
-  }
-
-  try {
-    const branch = await fetchBranchName(owner, repo, "");
-    const [visitorNames, identityNames] = await Promise.all([
-      fetchVisitorNames(owner, repo, visitorPath, branch),
-      fetchPublicIdentityNames(owner, repo, branch)
-    ]);
-
-    const visitors = visitorNames.map((name) => ({
-      name,
-      verified: identityNames.has(normalizeIdentity(name))
-    }));
-
-    renderVisitorMap(
-      visitors,
-      visitorElement,
-      nodeLayer,
-      tooltip,
-      tooltipName,
-      tooltipStatus,
-      title,
-      summary,
-      count,
-      verifiedCount,
-      neutralCount
-    );
-  } catch (error) {
-    title.textContent = "Visitors could not be loaded.";
-    summary.textContent = error instanceof Error ? error.message : "The GitHub API request failed.";
-    count.textContent = "-";
-    verifiedCount.textContent = "-";
-    neutralCount.textContent = "-";
-  }
-}
-
-async function fetchVisitorNames(owner, repo, visitorPath, branch) {
-  const response = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(visitorPath)}?ref=${encodeURIComponent(branch)}`,
-    {
-      headers: {
-        Accept: "application/vnd.github+json"
-      }
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`GitHub contents API returned ${response.status}.`);
-  }
-
-  const payload = await response.json();
-
-  if (!Array.isArray(payload)) {
-    throw new Error("Visitors folder could not be read.");
-  }
-
-  return payload
-    .filter((entry) => entry.type === "file")
-    .map((entry) => entry.name)
-    .filter((name) => !name.toUpperCase().startsWith("CREATE A FILE"))
-    .sort((left, right) => left.localeCompare(right));
-}
-
-async function fetchPublicIdentityNames(owner, repo, branch) {
-  const [contributors, authors] = await Promise.all([
-    fetchContributorLogins(owner, repo),
-    fetchCommitAuthorNames(owner, repo, branch, 3)
-  ]);
-
-  const identities = new Set();
-  contributors.forEach((name) => identities.add(normalizeIdentity(name)));
-  authors.forEach((name) => identities.add(normalizeIdentity(name)));
-  return identities;
-}
-
-async function fetchContributorLogins(owner, repo) {
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contributors?per_page=100`, {
-    headers: {
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const payload = await response.json();
-
-  if (!Array.isArray(payload)) {
-    return [];
-  }
-
-  return payload.map((entry) => entry.login).filter(Boolean);
-}
-
-async function fetchCommitAuthorNames(owner, repo, branch, maxPages) {
-  const names = new Set();
-
-  for (let page = 1; page <= maxPages; page += 1) {
-    const url = new URL(`https://api.github.com/repos/${owner}/${repo}/commits`);
-    url.searchParams.set("sha", branch);
-    url.searchParams.set("per_page", "100");
-    url.searchParams.set("page", String(page));
-
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.github+json"
-      }
-    });
-
-    if (!response.ok) {
-      break;
-    }
-
-    const payload = await response.json();
-
-    if (!Array.isArray(payload) || payload.length === 0) {
-      break;
-    }
-
-    payload.forEach((entry) => {
-      if (entry.author?.login) {
-        names.add(entry.author.login);
-      }
-
-      if (entry.commit?.author?.name) {
-        names.add(entry.commit.author.name);
-      }
-    });
-
-    if (payload.length < 100) {
-      break;
-    }
-  }
-
-  return [...names];
 }
 
 function renderVisitorMap(
@@ -522,17 +221,17 @@ function renderVisitorMap(
   title,
   summary,
   count,
-  verifiedCount,
-  neutralCount
+  brightCount,
+  quietCount
 ) {
   nodeLayer.replaceChildren();
 
-  const verifiedVisitors = visitors.filter((visitor) => visitor.verified).length;
-  const neutralVisitors = visitors.length - verifiedVisitors;
+  const brightVisitors = visitors.filter((visitor) => visitor.verified).length;
+  const quietVisitors = visitors.length - brightVisitors;
 
   count.textContent = String(visitors.length);
-  verifiedCount.textContent = String(verifiedVisitors);
-  neutralCount.textContent = String(neutralVisitors);
+  brightCount.textContent = String(brightVisitors);
+  quietCount.textContent = String(quietVisitors);
 
   if (visitors.length === 0) {
     title.textContent = "No visitors yet.";
@@ -553,10 +252,7 @@ function renderVisitorMap(
     node.className = `visitor-node${visitor.verified ? " is-verified" : ""}`;
     node.style.left = `${point.x}%`;
     node.style.top = `${point.y}%`;
-    node.setAttribute(
-      "aria-label",
-      `${visitor.name}. Visitor star.`
-    );
+    node.setAttribute("aria-label", `${visitor.name}. Visitor star.`);
 
     const label = document.createElement("span");
     label.className = "visitor-node-label";
@@ -600,9 +296,7 @@ function renderVisitorMap(
       : "A quiet star in the constellation.";
 
     tooltipName.textContent = visitor.name;
-    tooltipStatus.textContent = visitor.verified
-      ? "Bright star"
-      : "Quiet star";
+    tooltipStatus.textContent = visitor.verified ? "Bright star" : "Quiet star";
     tooltip.style.left = `${clamp(point.x, 14, 86)}%`;
     tooltip.style.top = `${clamp(point.y - 4, 18, 84)}%`;
 
@@ -610,6 +304,13 @@ function renderVisitorMap(
       tooltip.classList.add("is-visible");
     }
   }
+}
+
+function showGraphError(message, detail, inspectorMessage, inspectorAuthor, inspectorTime, inspectorSha) {
+  inspectorMessage.textContent = message;
+  inspectorAuthor.textContent = "Unavailable";
+  inspectorTime.textContent = detail;
+  inspectorSha.textContent = "-";
 }
 
 function buildPath(points) {
@@ -672,8 +373,4 @@ function createVisitorLayout(count) {
   }
 
   return points;
-}
-
-function normalizeIdentity(value) {
-  return value.trim().toLowerCase();
 }
