@@ -20,12 +20,15 @@ This project is built around that idea. The page in [`index.html`](index.html) t
 - remotes and forks
 - branches and commits
 - collaboration through pull requests
+- an interactive commit-history visualization with hover details
 
 ## Local preview
 
 Open [`index.html`](index.html) in a browser to view the animated landing page.
 
 The styling lives in [`style.css`](style.css).
+
+The interactive commit visualization is powered by [`script.js`](script.js).
 
 ## Fork workflow at a glance
 

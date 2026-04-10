@@ -360,6 +360,258 @@ h1 {
   font-weight: 700;
 }
 
+.history-experience {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.graph-stage {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  position: relative;
+  height: 420px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%),
+    radial-gradient(circle at 18% 20%, rgba(255, 209, 102, 0.18), transparent 24%),
+    radial-gradient(circle at 84% 76%, rgba(139, 233, 207, 0.12), transparent 24%),
+    rgba(8, 18, 31, 0.92);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.graph-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle 180px at var(--glow-x) var(--glow-y), rgba(255, 209, 102, 0.28), transparent 55%);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.graph-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 96%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.graph-stage-copy {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+
+.graph-stage-copy p {
+  margin: 0;
+  max-width: 34ch;
+  color: rgba(247, 243, 232, 0.76);
+  line-height: 1.5;
+}
+
+.graph-lines,
+.graph-nodes {
+  position: absolute;
+  inset: 0;
+}
+
+.graph-lines {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.commit-path {
+  fill: none;
+  stroke: rgba(255, 241, 207, 0.8);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 18px rgba(255, 209, 102, 0.25));
+}
+
+.graph-nodes {
+  z-index: 2;
+}
+
+.commit-node {
+  position: absolute;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(180deg, #fdf2c5, #ffb95d);
+  box-shadow:
+    0 0 0 0 rgba(255, 209, 102, 0.22),
+    0 0 28px rgba(255, 209, 102, 0.42);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.commit-node::before {
+  content: "";
+  position: absolute;
+  inset: -0.55rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transform: scale(0.88);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.commit-node[data-author="Excellence308"] {
+  background: linear-gradient(180deg, #fdf2c5, #ff9d64);
+}
+
+.commit-node[data-author="4gnusd3i"] {
+  background: linear-gradient(180deg, #c7fff0, #8be9cf);
+  box-shadow:
+    0 0 0 0 rgba(139, 233, 207, 0.18),
+    0 0 28px rgba(139, 233, 207, 0.36);
+}
+
+.commit-node:hover,
+.commit-node:focus-visible,
+.commit-node.is-active {
+  transform: translate(-50%, -50%) scale(1.38);
+  box-shadow:
+    0 0 0 12px rgba(255, 255, 255, 0.04),
+    0 0 34px rgba(255, 209, 102, 0.5);
+  outline: none;
+}
+
+.commit-node:hover::before,
+.commit-node:focus-visible::before,
+.commit-node.is-active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.commit-node-label {
+  position: absolute;
+  top: -1.45rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.22rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(8, 18, 31, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff4ce;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.commit-tooltip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 18, 31, 0.9);
+  box-shadow: 0 20px 60px rgba(3, 9, 16, 0.35);
+  transform: translate(-50%, calc(-100% - 1rem));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  z-index: 3;
+}
+
+.commit-tooltip.is-visible {
+  opacity: 1;
+}
+
+.commit-tooltip strong,
+.commit-tooltip span {
+  display: block;
+}
+
+.commit-tooltip strong {
+  margin-bottom: 0.2rem;
+  font-size: 0.98rem;
+}
+
+.commit-tooltip span {
+  color: var(--muted);
+  line-height: 1.4;
+  font-size: 0.88rem;
+}
+
+.commit-inspector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 420px;
+  padding: 1.2rem;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 36%),
+    rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.commit-kicker {
+  margin: 0 0 0.4rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+}
+
+.commit-inspector h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  min-height: 7.6rem;
+  line-height: 1.2;
+}
+
+.commit-meta {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+}
+
+.commit-meta div {
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.commit-meta dt {
+  margin: 0 0 0.3rem;
+  color: #fff4ce;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.commit-meta dd {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 @keyframes shimmer {
   to {
     transform: translateX(120%);
@@ -432,6 +684,10 @@ h1 {
   .hero-stage {
     min-height: 620px;
   }
+
+  .history-experience {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -454,6 +710,24 @@ h1 {
   .story-grid,
   .cheatsheet-grid {
     grid-template-columns: 1fr;
+  }
+
+  .graph-stage {
+    height: 460px;
+  }
+
+  .graph-stage-copy p {
+    max-width: 24ch;
+    font-size: 0.92rem;
+  }
+
+  .commit-inspector {
+    min-height: 0;
+  }
+
+  .commit-tooltip {
+    min-width: 150px;
+    max-width: 190px;
   }
 
   .hero-stage {

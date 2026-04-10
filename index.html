@@ -141,6 +141,51 @@
       </div>
     </section>
 
+    <section class="panel panel-graph">
+      <div class="panel-heading">
+        <p class="eyebrow">Interactive History</p>
+        <h2>Hover the repo history and watch the commits light up.</h2>
+      </div>
+
+      <div class="history-experience">
+        <div class="graph-stage" id="commit-graph" aria-label="Interactive visualization of repository commits">
+          <div class="graph-stage-copy">
+            <p>Real commits from this repository, reimagined as a glowing constellation.</p>
+          </div>
+
+          <svg class="graph-lines" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
+            <path id="commit-path" class="commit-path"></path>
+          </svg>
+
+          <div class="graph-nodes" id="commit-nodes"></div>
+
+          <div class="commit-tooltip" id="commit-tooltip" role="status" aria-live="polite">
+            <strong id="tooltip-author">Excellence308</strong>
+            <span id="tooltip-time">Hover a commit node</span>
+          </div>
+        </div>
+
+        <aside class="commit-inspector" id="commit-inspector" aria-live="polite">
+          <p class="commit-kicker">Selected commit</p>
+          <h3 id="inspector-message">Loading commit history...</h3>
+          <dl class="commit-meta">
+            <div>
+              <dt>Author</dt>
+              <dd id="inspector-author">-</dd>
+            </div>
+            <div>
+              <dt>Timestamp</dt>
+              <dd id="inspector-time">-</dd>
+            </div>
+            <div>
+              <dt>Short SHA</dt>
+              <dd id="inspector-sha">-</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
     <section class="panel panel-cheatsheet">
       <div class="panel-heading">
         <p class="eyebrow">Pocket spellbook</p>
@@ -175,5 +220,6 @@
       </div>
     </section>
   </main>
+  <script src="script.js"></script>
 </body>
 </html>
